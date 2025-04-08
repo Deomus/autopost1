@@ -37,7 +37,7 @@ async def on_startup():
     if ids_users:
         for id_user in ids_users:
             if await MongoDB().check_user(id_user["id"]):
-                # asyncio.create_task(infinity_scrolling(id_user["id"]))
+                asyncio.create_task(infinity_scrolling(id_user["id"]))
                 asyncio.create_task(infinity_posting(id_user["id"]))
                 logger.success(f"ID:{id_user["id"]} create infinity_scrolling and infinity_posting")
                 

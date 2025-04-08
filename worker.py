@@ -227,18 +227,4 @@ async def infinity_posting(id: str):
             
         except Exception as e:
             logger.error(f"ID: {id} Ошибка в infinity_posting: {e}")
-            await asyncio.sleep(15)   
-        
-            
-async def main():
-    # t1=asyncio.create_task(infinity_scrolling(7296314118))
-    # t2=asyncio.create_task(infinity_posting(7296314118))
-    
-    # await asyncio.gather(t1, t2)
-    
-    # await infinity_posting(7296314118)
-    await infinity_scrolling(6811754340)
-
-    
-if __name__ == "__main__":    
-    asyncio.run(main())
+            await asyncio.sleep(15)
