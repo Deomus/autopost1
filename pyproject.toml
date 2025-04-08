@@ -1,0 +1,15 @@
+[project]
+name = "autopost1"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "aiogram>=3.18.0",
+    "loguru>=0.7.3",
+    "motor>=3.7.0",
+    "playwright>=1.50.0",
+    "pydantic-settings>=2.8.1",
+    "redis>=5.2.1",
+    "selectolax>=0.3.28",
+]

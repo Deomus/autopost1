@@ -1,0 +1,31 @@
+services:
+  mongo:
+    image: mongo:7.0
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: resu
+    ports:
+      - 127.0.0.1:27017:27017
+    volumes:
+      - ./mongo_data:/data/db
+
+  # playwright:
+  #   image: mcr.microsoft.com/playwright:v1.50.0-noble
+  #   ports:
+  #     - "3030:3030"
+  #   init: true
+  #   stdin_open: true
+  #   tty: true
+  #   working_dir: /home/pwuser
+  #   user: pwuser
+  #   command: ["/bin/sh", "-c", "npx -y playwright@1.50.0 run-server --port 3030 --host 0.0.0.0"]
+
+
+  redis:  # Имя сервиса
+    image: redis:latest  # Используем официальный образ Redis
+    ports:
+      - 127.0.0.1:6379:6379  # Пробрасываем порт 6379 (порт Redis по умолчанию)
+    volumes:
+      - ./redis_data:/data  # Сохраняем данные Redis в volume
+    restart: always 

@@ -1,0 +1,12 @@
+from enum import Enum
+
+
+
+
+class Status(Enum):
+    SUCCES = "SUCCES"
+    ERROR = "ERROR"
+    AUTHERROR = "AUTHERROR"
+    NOTVIDEO = "NOTVIDEO"
+    DOWNLOADCOMPLETE = "DOWNLOADCOMPLETE"
+    GENERALERROR = "GENERALERROR"
