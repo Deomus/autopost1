@@ -63,7 +63,7 @@ async def set_instagram(message: Message, state: FSMContext):
         logger.info(f"proxy {proxy}")
         try:
             p = await async_playwright().start()  
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.chromium.launch(headless=False)
             context = await browser.new_context(locale='en-US')
             page = await context.new_page()
 
