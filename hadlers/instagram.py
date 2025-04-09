@@ -63,12 +63,12 @@ async def set_instagram(message: Message, state: FSMContext):
         logger.info(f"proxy {proxy}")
         try:
             p = await async_playwright().start()  
-            browser = await p.chromium.launch(headless=True, proxy=proxy)
+            browser = await p.chromium.launch(headless=False)
             context = await browser.new_context(locale='en-US')
             page = await context.new_page()
 
             await sent_message.edit_text("Загрузка страницы...")
-            await page.goto("https://www.instagram.com/accounts/login/")
+            await page.goto("https://www.instagram.com/accounts/login")
             await asyncio.sleep(5)
             # await page.screenshot(path=f"insta_{message.from_user.id}_{uuid.uuid4()}.png", full_page=True)
             

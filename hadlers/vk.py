@@ -65,7 +65,7 @@ async def set_vk(message: Message, state: FSMContext):
             login = data[0]
             password = data[1]
             p = await async_playwright().start()
-            browser = await p.chromium.launch(headless=True, proxy=proxy)
+            browser = await p.chromium.launch(headless=False)
             context = await browser.new_context(locale='en-US')
             page = await context.new_page()
 
@@ -193,6 +193,11 @@ async def set_vk_backup(message: Message, state: FSMContext):
         await page.locator(".vkc__TextField__input").first.fill(backup_code)
         await asyncio.sleep(1)
 
+        # await page.get_by_role("textbox", name="Enter the code").click()
+        # await asyncio.sleep(0.5)
+        # await page.get_by_role("textbox", name="Enter the code").fill("backup_code")
+        # await asyncio.sleep(1)
+        
         await page.get_by_role("button", name="Continue").click()
         await asyncio.sleep(2)
 

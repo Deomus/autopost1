@@ -27,6 +27,7 @@ settings_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Группы VK", callback_data="groups_vk")],
     [InlineKeyboardButton(text="Порог лайков", callback_data="likes")],
     [InlineKeyboardButton(text="Интервал отправки", callback_data="interval")],
+    
 ])
 
 
