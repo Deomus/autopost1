@@ -16,6 +16,7 @@ from hadlers.proxy_instagram import router as proxy_instagram_router
 from hadlers.proxy_vk import router as proxy_vk_router
 from hadlers.groups_vk import router as groups_vk_router
 from hadlers.video_url import router as video_url_router
+from hadlers.scroll import router as scroll_router
 
 
 from database import MongoDB
@@ -58,7 +59,8 @@ async def main():
         proxy_instagram_router,
         proxy_vk_router,
         groups_vk_router,
-        video_url_router
+        video_url_router,
+        scroll_router,
     )
 
     dp.startup.register(on_startup)

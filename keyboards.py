@@ -25,10 +25,9 @@ settings_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Proxy VK", callback_data="proxy_vk")],
     [InlineKeyboardButton(text="VK", callback_data="vk")],
     [InlineKeyboardButton(text="Группы VK", callback_data="groups_vk")],
-    [InlineKeyboardButton(text="Начать скроллинг", callback_data="start_scrolling")],
     [InlineKeyboardButton(text="Порог лайков", callback_data="likes")],
     [InlineKeyboardButton(text="Интервал отправки", callback_data="interval")],
-    # [InlineKeyboardButton(text="Начать скроллинг", callback_data="start_scrolling")],
+    [InlineKeyboardButton(text="Начать скроллинг", callback_data="start_scrolling")],
 ])
 
 
