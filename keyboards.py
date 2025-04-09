@@ -28,6 +28,7 @@ settings_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Порог лайков", callback_data="likes")],
     [InlineKeyboardButton(text="Интервал отправки", callback_data="interval")],
     [InlineKeyboardButton(text="Начать скроллинг", callback_data="start_scrolling")],
+    [InlineKeyboardButton(text="Остановить скроллинг", callback_data="stop_scrolling")],
 ])
 
 
