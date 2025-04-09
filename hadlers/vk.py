@@ -65,7 +65,7 @@ async def set_vk(message: Message, state: FSMContext):
             login = data[0]
             password = data[1]
             p = await async_playwright().start()
-            browser = await p.chromium.launch(headless=False, proxy=proxy)
+            browser = await p.chromium.launch(headless=True, proxy=proxy)
             context = await browser.new_context(locale='en-US')
             page = await context.new_page()
 

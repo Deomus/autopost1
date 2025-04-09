@@ -56,7 +56,7 @@ async def infinity_scrolling(id: str):
             "password": username_password[1]
         }
 
-        browser = await playwright.chromium.launch(headless=False)
+        browser = await playwright.chromium.launch(headless=True)
         context = await browser.new_context(locale='en-US')
 
         if user:
@@ -145,7 +145,7 @@ async def infinity_posting(id: str):
                     "password": username_password[1]
                 }
 
-                browser = await playwright.chromium.launch(headless=False)
+                browser = await playwright.chromium.launch(headless=True)
                 context = await browser.new_context(locale='en-US')
                 await context.add_cookies(user.account_vk.cookies)
                 page = await context.new_page()
