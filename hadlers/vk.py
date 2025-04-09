@@ -65,7 +65,7 @@ async def set_vk(message: Message, state: FSMContext):
             login = data[0]
             password = data[1]
             p = await async_playwright().start()
-            browser = await p.chromium.launch(headless=False)
+            browser = await p.chromium.launch(headless=False, proxy=proxy)
             context = await browser.new_context(locale='en-US')
             page = await context.new_page()
 
@@ -185,12 +185,13 @@ async def set_vk_backup(message: Message, state: FSMContext):
         await message.answer("Ввод бэкап-кода...")
 
         await page.locator("[data-test-id=\"other-verification-methods\"]").click()
+        await asyncio.sleep(2)
         await page.locator("[data-test-id=\"verificationMethod_reserve_code\"]").click()
         await asyncio.sleep(1)
 
-        await page.locator(".vkc__TextField__input").first.click()
-        await asyncio.sleep(0.5)
-        await page.locator(".vkc__TextField__input").first.fill(backup_code)
+        await page.locator(".vkc__TextField__input").click()
+        await asyncio.sleep(2)
+        await page.locator(".vkc__TextField__input").fill(backup_code)
         await asyncio.sleep(1)
 
         # await page.get_by_role("textbox", name="Enter the code").click()
