@@ -90,6 +90,7 @@ async def set_instagram(message: Message, state: FSMContext):
             await asyncio.sleep(random.uniform(1.5, 5.5))
             await page.keyboard.press('Enter')
             await sent_message.edit_text("Обработка данных...")
+            await page.screenshot(path="full_page.png", full_page=True)
             await asyncio.sleep(10)
             
             # await sent_message.edit_text("Введите код из SMS или WhatsApp")
@@ -117,6 +118,8 @@ async def set_instagram(message: Message, state: FSMContext):
 
             logger.success(f"ID: {message.from_user.id} Успешный вход в Instagram")
             await message.answer("Успешный вход в Instagram", reply_markup=settings_keyboard)
+            await page.screenshot(path="full_page.png", full_page=True)
+
                         
         except Exception as e:
             logger.error(f"Ошибка при входе: {e}")

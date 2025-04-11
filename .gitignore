@@ -110,3 +110,6 @@ venv.bak/
 .mypy_cache/
 
 
+# temp cookie
+cookies*
+full_page.png
