@@ -90,6 +90,15 @@ async def set_instagram(message: Message, state: FSMContext):
             await asyncio.sleep(random.uniform(1.5, 5.5))
             await page.keyboard.press('Enter')
             await sent_message.edit_text("Обработка данных...")
+            try:
+                button = await page.query_selector('role=button[name="Reload page"]')
+                if button:
+                    await button.click()
+                    await asyncio.sleep(1)
+                else:
+                    logger.info("🔹 Кнопка 'Reload page' не найдена — пропускаем")
+            except Exception as e:
+                logger.warning(f"⚠️ Ошибка при проверке кнопки cookies: {e}")
             await page.screenshot(path="full_page.png", full_page=True)
             await asyncio.sleep(10)
             
