@@ -89,4 +89,4 @@ async def video_url(message: Message, state: FSMContext):
 
     except Exception as e:
         logger.error(f"Ошибка при загрузке reels: {e}")
-        await sent_msg.edit_text(f"Ошибка в загрузке видео\n{message.text}")
+        await sent_msg.edit_text(f"Ошибка в загрузке видео, попробуйте войти в аккаунт instagram еще раз\n{message.text}")
