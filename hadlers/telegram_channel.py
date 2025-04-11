@@ -43,9 +43,11 @@ async def telegram_channel_handler(callback: CallbackQuery, state: FSMContext):
         text = "Добавленные каналы:\n" + "\n".join(
             [f"@{(await bot.get_chat(cid)).username}" if (await bot.get_chat(cid)).username else f"{cid}"
              for cid in channels]
-        ) + "\n\nВведите username нового канала, например: <code>@my_channel</code>"
+        ) + "\n\n1.Добавьте бота в администраторы канала.\n"
+        "2.Введите username нового канала, например: <code>@my_channel</code>"
     else:
-        text = "Введите username канала, например: <code>@my_channel</code>"
+        text = "1.Добавьте бота в администраторы канала.\n" \
+        "Введите username канала, например: <code>@my_channel</code>"
 
     await callback.message.answer(text, reply_markup=markup, parse_mode="HTML")
     await state.set_state(TelegramChannelStates.waiting_for_channel_username)
@@ -80,6 +82,13 @@ async def save_telegram_channel(message: Message, state: FSMContext):
         )
     except Exception as e:
         logger.error(f"Ошибка при добавлении канала: {e}")
-        await message.answer(f"❌ Не удалось добавить канал: {e}")
+        await message.answer(
+            "❌ Не удалось добавить канал.\n\n"
+            "1. Убедитесь, что вы ввели правильный username (например: <code>@my_channel</code>).\n"
+            "2. Добавьте бота в канал и дайте ему права администратора.\n"
+            "3. Убедитесь, что канал — это именно <b>Telegram-канал</b>, а не чат или группа.",
+            parse_mode="HTML"
+        )
+
     finally:
         await state.clear()

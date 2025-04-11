@@ -11,6 +11,10 @@ from aiogram import Bot
 from config import settings
 
 
+
+
+from aiogram.types import FSInputFile
+
 postcard = "div.x1qjc9v5.x9f619.x78zum5.xg7h5cd.x1xfsgkm.xqmdsaz.x1bhewko.xgv127d.xh8yej3.xl56j7k"
 likes = "span.html-span.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1hl2dhg.x16tdsg8.x1vvkbs"
 
@@ -112,7 +116,6 @@ async def infinity_scrolling(id: str):
                                         logger.info(f"ID: {id} Видео уже в Redis: {video_url}")
                             else:
                                 logger.warning("нет ссылки на видео")
-                                await page.screenshot(path=f"debug_{uuid.uuid4()}.png")
 
                         await page.keyboard.press('End')
                         await asyncio.sleep(3)
@@ -132,16 +135,23 @@ async def infinity_scrolling(id: str):
                     await page.close()
 
 async def infinity_posting(id: str):
+    bot = Bot(token=settings.token)
     logger.info(f"ID: {id} start posting")
+
     while True:
         try:
             async with async_playwright() as playwright:
                 user = await MongoDB().get_user(id)
+                if not user or not user.queue:
+                    logger.info(f"ID: {id} Очередь пуста, спим 60 сек...")
+                    await asyncio.sleep(60)
+                    continue
+
+                # Настраиваем прокси для VK
                 proxy_url = user.proxy_vk.uri
                 proxy_parts = proxy_url.split("://")[1].split("@")
                 username_password = proxy_parts[0].split(":")
                 host_port = proxy_parts[1]
-
                 proxy = {
                     "server": f"http://{host_port}",
                     "username": username_password[0],
@@ -152,39 +162,76 @@ async def infinity_posting(id: str):
                 context = await browser.new_context(locale='en-US')
                 await context.add_cookies(user.account_vk.cookies)
                 page = await context.new_page()
-                user = await MongoDB().get_user(id)
 
-                while len(user.queue) != 0:
-                    for group in user.groups_vk:
-                        await page.goto(group.url)
-                        await asyncio.sleep(5)
-                        logger.info(f"ID: {id} download page {group.url}")
+                while user.queue:
+                    filepath = user.queue[0]
+                    success_vk = True
+                    success_tg = True
 
-                        await page.get_by_test_id("posting_create_post_button").click()
-                        await asyncio.sleep(1)
-                        await page.get_by_text("Загрузить с устройства").click()
-                        await asyncio.sleep(1)
-                        await page.get_by_test_id("posting_base_screen_download_from_device").set_input_files(user.queue[0])
-                        await asyncio.sleep(1)
-                        await page.get_by_test_id("posting_base_screen_next").click()
-                        await asyncio.sleep(1)
-                        await page.get_by_test_id("posting_submit_button").click()
-                        await asyncio.sleep(1)
-                        logger.info(f"ID: {id} posting video: {user.queue[0]} in {group.url}")
+                    # --- POST TO VK ---
+                    try:
+                        for group in user.groups_vk:
+                            await page.goto(group.url)
+                            await asyncio.sleep(5)
+                            logger.info(f"ID: {id} VK → {group.url}")
 
-                        await MongoDB().delete_from_queue(id, user.queue[0])
-                        logger.info(f"ID: {id} delete video from queue_db: {user.queue[0]}")
+                            await page.get_by_test_id("posting_create_post_button").click()
+                            await asyncio.sleep(1)
+                            await page.get_by_text("Загрузить с устройства").click()
+                            await asyncio.sleep(1)
+                            await page.get_by_test_id("posting_base_screen_download_from_device").set_input_files(filepath)
+                            await asyncio.sleep(1)
+                            await page.get_by_test_id("posting_base_screen_next").click()
+                            await asyncio.sleep(1)
+                            await page.get_by_test_id("posting_submit_button").click()
+                            await asyncio.sleep(1)
 
-                        if os.path.exists(user.queue[0]):
-                            os.remove(user.queue[0])
-                            logger.info(f"ID: {id} delete video from downloads: {user.queue[0]}")
+                            logger.info(f"ID: {id} отправлено в VK: {group.url}")
+                            await asyncio.sleep(user.interval * 60)
+                    except Exception as e:
+                        logger.error(f"ID: {id} ❌ Ошибка VK: {e}")
+                        success_vk = False
+
+                    # --- POST TO TELEGRAM ---
+                    try:
+                        if user.telegram_channels:
+                            for channel_id in user.telegram_channels:
+                                try:
+                                    # Формируем корректный InputFile для aiogram
+                                    video_file = FSInputFile(filepath)
+                                    await bot.send_video(
+                                        chat_id=channel_id,
+                                        video=video_file,
+                                        caption=""
+                                    )
+                                    logger.info(f"ID: {id} отправлено в Telegram {channel_id}")
+                                except Exception as tg_err:
+                                    logger.error(f"ID: {id} ❌ Ошибка Telegram канал {channel_id}: {tg_err}")
+                                    success_tg = False
+                    except Exception as e:
+                        logger.error(f"ID: {id} ❌ Ошибка Telegram блока: {e}")
+                        success_tg = False
+
+                    # --- Удаляем, только если отправка успешна во всех каналах ---
+                    if success_vk or success_tg:
+                        await MongoDB().delete_from_queue(id, filepath)
+                        logger.info(f"ID: {id} удалено из очереди: {filepath}")
+
+                        if os.path.exists(filepath):
+                            os.remove(filepath)
+                            logger.info(f"ID: {id} удалено с диска: {filepath}")
                         else:
-                            logger.info(f"ID: {id} not exists video: {user.queue[0]}")
+                            logger.warning(f"ID: {id} файл {filepath} не найден")
+                    else:
+                        logger.warning(f"ID: {id} ❌ Видео не отправлено во все каналы — оставляем в очереди")
 
-                        await asyncio.sleep(user.interval * 60)
-                        user = await MongoDB().get_user(id)
+                    # Обновляем данные пользователя для следующей итерации
+                    user = await MongoDB().get_user(id)
 
-            logger.info(f"ID: {id} not video for posting, sleep 60 sec...")
+                # Закрываем контекст и браузер (при выходе из внутреннего цикла)
+                await context.close()
+                await browser.close()
+
             await asyncio.sleep(60)
 
         except Exception as e:
