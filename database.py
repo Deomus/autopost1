@@ -104,19 +104,14 @@ class MongoDB:
             {"id": id},  
             {'$set': {'account_vk': AccountVK(login=login, password=password, cookies=cookies).model_dump()}}
         )
+
     @classmethod
-    async def add_telegram_channel(cls, id: str, chat_id: int):
+    async def add_telegram_channel(cls, id: int, chat_id: int):
         await cls._users.update_one(
             {"id": id},
-            {"$addToSet": {"telegram_channels": chat_id}},  # не добавит дубликат
+            {"$addToSet": {"telegram_channels": chat_id}},
             upsert=True
         )
-    
-    @classmethod
-    async def get_telegram_channels(cls, id: str) -> list[int]:
-        user = await cls.get_user(id)
-        return user.telegram_channels if user and hasattr(user, "telegram_channels") else []
-
 
         
     @classmethod

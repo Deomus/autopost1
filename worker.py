@@ -7,6 +7,9 @@ from pprint import pprint as pp
 from database import MongoDB
 from loguru import logger
 from redis.asyncio import Redis
+from aiogram import Bot
+from config import settings
+
 
 postcard = "div.x1qjc9v5.x9f619.x78zum5.xg7h5cd.x1xfsgkm.xqmdsaz.x1bhewko.xgv127d.xh8yej3.xl56j7k"
 likes = "span.html-span.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1hl2dhg.x16tdsg8.x1vvkbs"

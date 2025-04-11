@@ -27,3 +27,4 @@ class User(BaseModel):
     interval: int = 5
     likes: int = 100000
     queue: List[str] = []
+    telegram_channels: Optional[List[int]] = []
