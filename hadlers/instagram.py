@@ -72,13 +72,16 @@ async def set_instagram(message: Message, state: FSMContext):
             await asyncio.sleep(5)
             
             try:
-                cookies_heading = await page.get_by_role("heading", name="Allow the use of cookies from").wait_for(timeout=3000)
-                if cookies_heading:
-                    logger.info("✅ Обнаружено окно cookies — принимаем")
-                    await page.get_by_role("button", name="Allow all cookies").click()
+                button = await page.query_selector('role=button[name="Allow all cookies"]')
+                if button:
+                    await button.click()
                     await asyncio.sleep(1)
-            except Exception:
-                logger.info("ℹ️ Окно cookies не появилось — продолжаем без него")
+                    logger.info("✅ Куки приняты")
+                else:
+                    logger.info("🔹 Кнопка 'Allow all cookies' не найдена — пропускаем")
+            except Exception as e:
+                logger.warning(f"⚠️ Ошибка при проверке кнопки cookies: {e}")
+
             
             await sent_message.edit_text("Ввод данных...")
             await page.get_by_role("textbox", name="Phone number, username, or email").fill(data[0])
