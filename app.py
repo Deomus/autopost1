@@ -17,6 +17,7 @@ from hadlers.proxy_vk import router as proxy_vk_router
 from hadlers.groups_vk import router as groups_vk_router
 from hadlers.video_url import router as video_url_router
 from hadlers.scroll import router as scroll_router
+from hadlers.telegram_channel import router as telegram_channel_router
 
 
 from database import MongoDB
@@ -61,6 +62,7 @@ async def main():
         groups_vk_router,
         video_url_router,
         scroll_router,
+        telegram_channel_router,
     )
 
     dp.startup.register(on_startup)
