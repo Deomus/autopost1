@@ -63,14 +63,22 @@ async def set_instagram(message: Message, state: FSMContext):
         logger.info(f"proxy {proxy}")
         try:
             p = await async_playwright().start()  
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.chromium.launch(headless=False)
             context = await browser.new_context(locale='en-US')
             page = await context.new_page()
 
             await sent_message.edit_text("Загрузка страницы...")
             await page.goto("https://www.instagram.com/accounts/login")
             await asyncio.sleep(5)
-            # await page.screenshot(path=f"insta_{message.from_user.id}_{uuid.uuid4()}.png", full_page=True)
+            
+            try:
+                cookies_heading = await page.get_by_role("heading", name="Allow the use of cookies from").wait_for(timeout=3000)
+                if cookies_heading:
+                    logger.info("✅ Обнаружено окно cookies — принимаем")
+                    await page.get_by_role("button", name="Allow all cookies").click()
+                    await asyncio.sleep(1)
+            except Exception:
+                logger.info("ℹ️ Окно cookies не появилось — продолжаем без него")
             
             await sent_message.edit_text("Ввод данных...")
             await page.get_by_role("textbox", name="Phone number, username, or email").fill(data[0])
